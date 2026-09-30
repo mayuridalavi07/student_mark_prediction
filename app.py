@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
 import numpy as np
+import pandas as pd
 
 # Load trained model
 model = joblib.load("student_marks_model.joblib")
@@ -74,37 +75,51 @@ sleep_hours = st.number_input(
     step=0.5
 )
 
+study_method = st.selectbox(
+    "Study Method",
+    ["Self Study", "Group Study", "Online"]
+)
+
+extracurricular = st.selectbox(
+    "Extracurricular",
+    ["Yes", "No"]
+)
+
 st.divider()
 
 # Prediction button
 if st.button("Predict Final Marks", type="primary"):
 
-    input_data = np.array([[
-        study_hours,
-        attendance,
-        previous_marks,
-        assignment_marks,
-        internal_marks,
-        practice_test_scores,
-        sleep_hours
-    ]])
+    input_data = pd.DataFrame([{
+    "study_hours": study_hours,
+    "attendance_percentage": attendance,
+    "previous_exam_marks": previous_marks,
+    "assignment_marks": assignment_marks,
+    "internal_marks": internal_marks,
+    "practice_test_scores": practice_test_scores,
+    "sleep_hours": sleep_hours,
+    "study_method": study_method,
+    "extracurricular": extracurricular
+}])
 
-    prediction = model.predict(input_data)[0]
+prediction = model.predict(input_data)[0]
+
 
     # Keep prediction between 0 and 100
-    prediction = max(0, min(100, prediction))
+prediction = model.predict(input_data)[0]
+prediction = max(0, min(100, prediction))
 
-    st.success(f"Predicted Final Exam Marks: {prediction:.2f} / 100")
+st.success(f"Predicted Final Exam Marks: {prediction:.2f} / 100")
 
-    st.subheader("Input Summary")
+st.subheader("Input Summary")
 
-    st.write(f"📚 Study Hours: {study_hours}")
-    st.write(f"📅 Attendance: {attendance}%")
-    st.write(f"📝 Previous Exam Marks: {previous_marks}")
-    st.write(f"📄 Assignment Marks: {assignment_marks}")
-    st.write(f"📊 Internal Marks: {internal_marks}")
-    st.write(f"✍️ Practice Test Scores: {practice_test_scores}")
-    st.write(f"😴 Sleep Hours: {sleep_hours}")
+st.write(f"📚 Study Hours: {study_hours}")
+st.write(f"📅 Attendance: {attendance}%")
+st.write(f"📝 Previous Exam Marks: {previous_marks}")
+st.write(f"📄 Assignment Marks: {assignment_marks}")
+st.write(f"📊 Internal Marks: {internal_marks}")
+st.write(f"✍️ Practice Test Scores: {practice_test_scores}")
+st.write(f"😴 Sleep Hours: {sleep_hours}")
 
 st.divider()
 
